@@ -10,6 +10,7 @@ import { Firestore } from '@angular/fire/firestore';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
+
 export class AppComponent {
   firestore: Firestore = inject(Firestore);
   title = 'my-web';

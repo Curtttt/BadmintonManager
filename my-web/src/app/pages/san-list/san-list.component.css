@@ -1,0 +1,17 @@
+.san{
+    justify-self: center;
+    display: block;
+    width: 200px;
+    height: 250px;
+    background-color: rgb(177, 174, 174);
+    text-align: center;
+    font-size: large;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.col {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
