@@ -1,0 +1,10 @@
+nav {
+    padding: 20px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.active-nav {
+    background-color: darkmagenta;
+}

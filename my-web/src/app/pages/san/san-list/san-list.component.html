@@ -1,0 +1,99 @@
+<div class="row row-cols-3 justify-content-center my-auto">
+
+    @for (san of sans$; track $index) {
+    <div class="col">
+        <div class="san">
+            <div class="mx-auto my-2">
+                Sân {{san.id}} - {{san.trangThai}}
+            </div>
+            @switch (san.trangThai) {
+            @case ("Sẵn sàng") {
+            <div class="mx-auto" style="margin-top: 80px;">Chưa có khách đặt trước</div>
+            <div class="hstack gap-2 mx-auto mt-auto mb-3 p-2">
+                <button (click)="datSan(san.id)" data-bs-toggle="modal" data-bs-target="#mainModal"
+                    class="btn btn-primary">Đặt ngay</button>
+                <button class="btn btn-warning">Đặt trước</button>
+            </div>
+            }
+            @case ("Đã đặt trước") {
+            <div class="hstack gap-2 pt-4 mx-2 mt-4 fs-6 position-relative"
+                style="background-color: rgb(166, 164, 196);">
+                <button (click)="edit(san.id)" data-bs-toggle="modal" data-bs-target="#mainModal"
+                    class="btn btn-info position-absolute top-0 start-50 translate-middle">Chỉnh sửa</button>
+                <div class="vstack text-end">
+                    <p>KH: </p>
+                    <p>SĐT: </p>
+                    <p>Giờ vào: </p>
+                </div>
+                <div class="vstack fw-normal text-start">
+                    <p>{{san.datTruoc.nguoiDat}}</p>
+                    <p>{{san.datTruoc.sdt}}</p>
+                    <p>{{san.datTruoc.tgDat.toDate().toLocaleTimeString()}}</p>
+                </div>
+            </div>
+            <div class="hstack mt-auto mx-auto mb-3 p-2 gap-2">
+                <button (click)="thanhToan(san.id)" class="btn btn-primary">Bắt đầu</button>
+                <button (click)="selected = san.id" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#huyModal">Hủy đặt</button>
+            </div>
+            }
+            @case ("Đang hoạt động") {
+            <div class="hstack gap-1 pt-4 mx-2 mt-4 fs-6 position-relative"
+                style="background-color: rgb(166, 164, 196);">
+                <button (click)="edit(san.id)" data-bs-toggle="modal" data-bs-target="#mainModal"
+                    class="btn btn-info position-absolute top-0 start-50 translate-middle">Chỉnh sửa</button>
+                <div class="ms-1 text-end" style="width:fit-content">
+                    <p>KH: </p>
+                    <p>SĐT: </p>
+                    <p>Giờ vào: </p>
+                </div>
+                <div class="vstack fw-normal text-start">
+                    <p>{{san.chiTiet.nguoiDat}}</p>
+                    <p>{{san.chiTiet.sdt}}</p>
+                    @if (san.chiTiet.hasOwnProperty("checkIn")) {
+                    <p>{{san.chiTiet.checkIn.toDate().toLocaleTimeString()}}</p>}
+                </div>
+            </div>
+            <div class="hstack mt-auto mx-auto mb-3 p-2 gap-2">
+                <button (click)="thanhToan(san.id)" class="btn btn-success">Thanh toán</button>
+                <button class="btn btn-warning">Đặt trước</button>
+            </div>
+            }
+            }
+        </div>
+    </div>}
+</div>
+<!--Modal-->
+<div class="modal fade" id="mainModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="mainModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @switch (state) {
+            @case ("Đặt ngay") { <app-san-book [maSan]="selected"></app-san-book> }
+            @case ("Đặt trước") { <app-san-prebook [maSan]="selected"></app-san-prebook> }
+            @case ("Chỉnh sửa") { <app-san-edit [maSan]="selected" [editData]="editData"></app-san-edit> }
+            }
+        </div>
+    </div>
+    <!-- <app-san-detail [maSan]="selected" [edit_]="edit_" [editData] = "editData"></app-san-detail> -->
+</div>
+<!--Modal-Hủy-->
+<div class="modal fade" id="huyModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="mainModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Hủy lịch đặt trước sân {{selected}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4>Xác nhận hủy đặt lịch đặt trước sân {{selected}}?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Thoát</button>
+                <button type="button" (click)="huyDat()" class="btn btn-danger" data-bs-dismiss="modal">Xác
+                    nhận</button>
+            </div>
+        </div>
+    </div>
+</div>

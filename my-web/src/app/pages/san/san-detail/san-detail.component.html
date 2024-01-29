@@ -1,0 +1,86 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        @if (edit_){
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                Chỉnh sửa đặt lịch sân {{maSan}}
+            </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="dkiForm">
+                <div>
+                    <label for="name">Họ tên:</label>
+                    <input type="text" formControlName="nguoiDat" [value]="editData.nguoiDat">
+                    @if (dkiForm.get('nguoiDat')?.invalid && dkiForm.get('nguoiDat')?.touched) {
+                    <div class="text-danger">Thiếu thông tin</div>
+                    }
+                </div>
+                <div class="my-2">
+                    <label for="sdt">SĐT:</label>
+                    <input list="sdt_lst" type="tel" (change)="getName(this.dkiForm.get('sdt').value)"
+                        formControlName="sdt" id="sdt" [value]="editData.sdt">
+                    @if (dkiForm.get('sdt')?.invalid && dkiForm.get('sdt')?.touched) {
+                    <div class="text-danger">SĐT sai định dạng</div>
+                    }
+                    <datalist id="sdt_lst">
+                        @for (sdt of sdt_lst; track $index) {
+                        <option value="{{sdt}}"></option>
+                        }
+                    </datalist>
+                </div>
+                <div>
+                    <input type="checkbox" class="me-2" id="vot">
+                    <label for="vot">Thuê vợt</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" (click)="printf()" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
+            <button type="button" (click)="xacNhan()" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
+        </div>}
+        @else {
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                Đặt lịch sân {{maSan}}
+            </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="dkiForm">
+                <div>
+                    <label for="name">Họ tên:</label>
+                    <input type="text" formControlName="nguoiDat">
+                    @if (dkiForm.get('nguoiDat')?.invalid && dkiForm.get('nguoiDat')?.touched) {
+                    <div class="text-danger">Thiếu thông tin</div>
+                    }
+                </div>
+                <div class="mt-2">
+                    <label for="sdt">SĐT:</label>
+                    <input list="sdt_lst" type="tel" (change)="getName(this.dkiForm.get('sdt').value)"
+                        formControlName="sdt" id="sdt">
+                    @if (dkiForm.get('sdt')?.invalid && dkiForm.get('sdt')?.touched) {
+                    <div class="text-danger">SĐT sai định dạng</div>
+                    }
+                    <datalist id="sdt_lst">
+                        @for (sdt of sdt_lst; track $index) {
+                        <option value="{{sdt}}"></option>
+                        }
+                    </datalist>
+                </div>
+                <div>
+                    <!-- <label for="tgvao">Thời gian vào:</label>
+                            <input type="time" formControlName="tgVao"> -->
+                </div>
+                <div>
+                    <input type="checkbox" class="me-2" id="vot">
+                    <label for="vot">Thuê vợt</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
+            <button type="button" (click)="xacNhan()" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
+        </div>}
+    </div>
+</div>
