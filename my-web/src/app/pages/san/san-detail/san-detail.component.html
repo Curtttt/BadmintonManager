@@ -1,86 +1,145 @@
-<div class="modal-dialog">
-    <div class="modal-content">
-        @if (edit_){
-        <div class="modal-header">
-            <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                Chỉnh sửa đặt lịch sân {{maSan}}
-            </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+@switch (state) {
+@case ("Đặt ngay") {
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="staticBackdropLabel">
+        Đặt lịch sân {{maSan}}
+    </h1>
+    <button type="button" (click)="cleanForm()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form [formGroup]="infoForm">
+        <div>
+            <label for="name" style="width: 120px" for="name">Họ tên:</label>
+            <input type="text" id="name" formControlName="nguoiDat">
+            @if (infoForm.get('nguoiDat')?.invalid && infoForm.get('nguoiDat')?.touched) {
+            <div class="text-danger">Thiếu thông tin</div>
+            }
         </div>
-        <div class="modal-body">
-            <form [formGroup]="dkiForm">
-                <div>
-                    <label for="name">Họ tên:</label>
-                    <input type="text" formControlName="nguoiDat" [value]="editData.nguoiDat">
-                    @if (dkiForm.get('nguoiDat')?.invalid && dkiForm.get('nguoiDat')?.touched) {
-                    <div class="text-danger">Thiếu thông tin</div>
-                    }
-                </div>
-                <div class="my-2">
-                    <label for="sdt">SĐT:</label>
-                    <input list="sdt_lst" type="tel" (change)="getName(this.dkiForm.get('sdt').value)"
-                        formControlName="sdt" id="sdt" [value]="editData.sdt">
-                    @if (dkiForm.get('sdt')?.invalid && dkiForm.get('sdt')?.touched) {
-                    <div class="text-danger">SĐT sai định dạng</div>
-                    }
-                    <datalist id="sdt_lst">
-                        @for (sdt of sdt_lst; track $index) {
-                        <option value="{{sdt}}"></option>
-                        }
-                    </datalist>
-                </div>
-                <div>
-                    <input type="checkbox" class="me-2" id="vot">
-                    <label for="vot">Thuê vợt</label>
-                </div>
-            </form>
+        <div class="my-2">
+            <label style="width: 120px" for="sdt">SĐT:</label>
+            <input list="sdt_lst" type="tel" (change)="getName(this.infoForm.get('sdt').value)" formControlName="sdt"
+                id="sdt">
+            @if (infoForm.get('sdt')?.invalid && infoForm.get('sdt')?.touched) {
+            <div class="text-danger">SĐT sai định dạng</div>
+            }
+            <datalist id="sdt_lst">
+                @for (sdt of sdt_lst; track $index) {
+                <option value="{{sdt}}"></option>
+                }
+            </datalist>
         </div>
-        <div class="modal-footer">
-            <button type="button" (click)="printf()" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
-            <button type="button" (click)="xacNhan()" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
-        </div>}
-        @else {
-        <div class="modal-header">
-            <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                Đặt lịch sân {{maSan}}
-            </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div>
+            <label style="width: 120px" for="checkIn">Thời gian vào:</label>
+            <input type="time" formControlName="checkIn" id="checkIn">
         </div>
-        <div class="modal-body">
-            <form [formGroup]="dkiForm">
-                <div>
-                    <label for="name">Họ tên:</label>
-                    <input type="text" formControlName="nguoiDat">
-                    @if (dkiForm.get('nguoiDat')?.invalid && dkiForm.get('nguoiDat')?.touched) {
-                    <div class="text-danger">Thiếu thông tin</div>
-                    }
-                </div>
-                <div class="mt-2">
-                    <label for="sdt">SĐT:</label>
-                    <input list="sdt_lst" type="tel" (change)="getName(this.dkiForm.get('sdt').value)"
-                        formControlName="sdt" id="sdt">
-                    @if (dkiForm.get('sdt')?.invalid && dkiForm.get('sdt')?.touched) {
-                    <div class="text-danger">SĐT sai định dạng</div>
-                    }
-                    <datalist id="sdt_lst">
-                        @for (sdt of sdt_lst; track $index) {
-                        <option value="{{sdt}}"></option>
-                        }
-                    </datalist>
-                </div>
-                <div>
-                    <!-- <label for="tgvao">Thời gian vào:</label>
-                            <input type="time" formControlName="tgVao"> -->
-                </div>
-                <div>
-                    <input type="checkbox" class="me-2" id="vot">
-                    <label for="vot">Thuê vợt</label>
-                </div>
-            </form>
+        <div class="d-flex my-2">
+            <div style="width: 120px">
+                <input type="checkbox" class="me-1" formControlName="thueVot" id="vot"
+                    (change)="checkVot(infoForm.get('thueVot').value)">
+                <label for="vot">Thuê vợt</label>
+            </div>
+            <input style="width: 50px;" type="number" formControlName="slVot">
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
-            <button type="button" (click)="xacNhan()" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
-        </div>}
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" (click)="cleanForm()" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
+    <button type="button" (click)="xacNhan('new')" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
+</div>
+}
+@case ("Chỉnh sửa") {
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="staticBackdropLabel">
+        Chỉnh sửa thông tin KH sân {{maSan}}
+    </h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form [formGroup]="infoForm">
+        <div>
+            <label for="name" style="width: 120px" for="name">Họ tên:</label>
+            <input type="text" id="name" formControlName="nguoiDat" [value]="infoKH.nguoiDat">
+            @if (infoForm.get('nguoiDat').invalid) {
+            <div class="text-danger">Thiếu thông tin</div>
+            }
+        </div>
+        <div class="my-2">
+            <label style="width: 120px" for="sdt">SĐT:</label>
+            <input list="sdt_lst" type="tel" (change)="getName(this.infoForm.get('sdt').value)" formControlName="sdt"
+                id="sdt" [value]="infoKH.sdt">
+            @if (infoForm.get('sdt').invalid) {
+            <div class="text-danger">SĐT sai định dạng</div>
+            }
+            <datalist id="sdt_lst">
+                @for (sdt of sdt_lst; track $index) {
+                <option value="{{sdt}}"></option>
+                }
+            </datalist>
+        </div>
+        <div>
+            <label style="width: 120px" for="checkIn">Thời gian vào:</label>
+            <input type="time" formControlName="checkIn" id="checkIn">
+        </div>
+        <div class="d-flex my-2">
+            <div style="width: 120px">
+                <input type="checkbox" id="vot" (change)="checkVot(infoForm.get('thueVot').value)" class="me-1"
+                    formControlName="thueVot">
+                <label for="vot">Thuê vợt</label>
+            </div>
+            <input style="width: 50px;" type="number" formControlName="slVot">
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
+    <button type="button" (click)="xacNhan('edit')" data-bs-dismiss="modal" class="btn btn-primary">Cập nhật</button>
+</div>
+}
+@case ("Thanh toán") {
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="staticBackdropLabel">
+        Thanh toán sân {{maSan}}
+    </h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="d-flex justify-content-center gap-3">
+        <div class="d-flex-column flex-shrink-1 fw-bold">
+            <p>Tên KH:</p>
+            <p>Số điện thoại:</p>
+            <p>Giờ vào:</p>
+            <p>Tổng thời gian:</p>
+            <p>Tiền thuê sân:</p>
+            <p>Tiền thuê vợt <span>({{infoKH.thueVot}} cái)</span>:</p>
+            <label style="margin-bottom: 16px;" (click)="editTT()" for="tt"><span class="text-decoration-underline">Tổng
+                    tiền</span><span class="text-danger" *ngIf="mark_txt"> (đã sửa)</span>:</label>
+            <p>Hình thức thanh toán:</p>
+        </div>
+        <div [formGroup]="billForm" class="d-flex-column">
+            <p>{{infoKH.nguoiDat}}</p>
+            <p>{{infoKH.sdt}}</p>
+            <p>{{infoKH.checkIn}}</p>
+            <p>{{infoKH.sogioThue}} h</p>
+            <p>{{infoKH.tongTien[0].toLocaleString("vi-VN")}} vnđ</p>
+            <p>{{infoKH.tongTien[1].toLocaleString("vi-VN")}} vnđ</p>
+            <input type="number" id="tt" style="width: 90px; border: none; margin-bottom: 16px"
+                (keyup.enter)="newTT($event)" formControlName="total">vnđ
+            <div>
+                <div>
+                    <input class="me-1" type="radio" id="cash" value="Tiền mặt" formControlName="payment">
+                    <label for="cash">Tiền mặt</label>
+                </div>
+                <div>
+                    <input class="me-1" type="radio" id="bank" value="Chuyển khoản" formControlName="payment">
+                    <label for="bank">Chuyển khoản</label>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+<div class="modal-footer">
+    <button type="button" (click)="rsTT()" class="btn btn-primary" data-bs-dismiss="modal">Thoát</button>
+    <button type="button" (click)="saveBill(maSan)" data-bs-dismiss="modal" class="btn btn-success">Thanh toán</button>
+</div>
+}
+}

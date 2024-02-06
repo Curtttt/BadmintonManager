@@ -1,54 +1,69 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { crudService } from '../../../../services/crud.service';
-import { SanBookComponent } from '../san-detail/san-book/san-book.component';
-import { SanEditComponent } from '../san-detail/san-edit/san-edit.component';
-import { SanPrebookComponent } from '../san-detail/san-prebook/san-prebook.component';
+import { SanDetailComponent } from '../san-detail/san-detail.component';
+import { Subscription } from 'rxjs';
+import { timeService } from '../../../../services/time.service';
 
 @Component({
   selector: 'app-san-list',
   standalone: true,
-  imports: [CommonModule, SanBookComponent, SanEditComponent, SanPrebookComponent],
+  imports: [CommonModule, SanDetailComponent],
   templateUrl: './san-list.component.html',
   styleUrl: './san-list.component.css'
 })
 
-export class SanListComponent implements OnDestroy{
-  sans$: any; editData: any = ""; data!: any; subscript: Subscription;
-  selected: string = ""; edit_ = false; state?: string;
+export class SanListComponent implements OnDestroy, OnInit {
+  sans$: any; infoKH?: any = { nguoiDat: '', sdt: '', checkIn: '' };
+  data!: any; selected: string = ""; state?: string; subscript!: Subscription;
 
-  constructor(private _service: crudService) {
-    this.subscript = _service.getCollection('san').subscribe(docs => this.sans$ = docs);
+
+  constructor(private _service: crudService, private _time: timeService) {}
+
+  ngOnInit(): void {
+    this._service.getCollection("san").then(docs => { this.sans$ = docs; });
+    this.subscript = this._service.editListener.subscribe(change => {
+      if (change != null) {
+        this.sans$[(parseInt(change.id) - 1).toString()] = change;
+        const idx = this.sans$.findIndex((item: any) => item.id == change.id);
+        this.sans$[idx] = change;
+      }
+    })
   }
 
-  ngOnDestroy(): void {
-    this.subscript.unsubscribe();
-  }
-  
-  datSan(id: string) { 
-    this.selected = id; 
-    this.state = "Đặt ngay";
-  }
-  
-  edit(id: string) {
+  ngOnDestroy(): void { this.subscript.unsubscribe(); }
+
+  datSan(id: string) {
     this.selected = id;
-    this.state = "Chỉnh sửa";
-    this.sans$.filter((doc: any) => this.editData = doc.chiTiet);
-  }
-  
-  thanhToan(id_: number) {
-    this.data = this.sans$.find((doc: any) => doc.id == id_);
-    let hoursUsed = Date.now() - this.data.chiTiet.checkIn.toDate();
-    // console.log(((hoursUsed / 3600000) * 70000).toLocaleString("vi-VN"));
-    // console.log((hoursUsed / 3600000));
+    this.state = "Đặt ngay";
+    this._service.editInfo(undefined);
   }
 
-  huyDat(){
+  bill(id_: string) {
+    let dongiaSan = 70000; let dongiaVot = 20000;
+    this.selected = id_;
+    let data = this.sans$.find((doc: any) => doc.id == id_);
+    let hoursUsed = this._time.getTimeDiff(this._time.getCurrentTime(), data.chiTiet.checkIn);
+
+    let san = (hoursUsed * dongiaSan);
+    let vot = (data.chiTiet.thueVot * dongiaVot);
+    
+    this._service.editInfo({...data.chiTiet, ...{activeHours: data.activeHours}, ...{sogioThue: hoursUsed}, ...{tongTien: [san, vot, san + vot]}});
+    this.state = "Thanh toán";
+  }
+
+  huySan(id: string) {
     let data = {
       chiTiet: { nguoiDat: '', sdt: '', checkIn: '' },
-      trangThai: 'Sẵn sàng',
+      trangThai: 'Sẵn sàng'
     }
-    this._service.updateDocument('san', this.selected, data)
+    this._service.updateDocument('san', this.selected, data);
+  }
+
+  edit(id_: string, status: string) {
+    this.selected = id_;
+    this.state = "Chỉnh sửa";
+    let target = this.sans$.find((doc: any) => doc.id == id_);
+    this._service.editInfo({...target.chiTiet, ...{trangThai: target.trangThai}});
   }
 } 

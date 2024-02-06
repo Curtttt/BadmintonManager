@@ -1,11 +1,12 @@
-<div class="row h-100">
-    <div class="col-2 p-0" style="background-color: thistle;">
+<div class="h-100 d-flex flex-nowrap">
+    <div class="flex-shrink-0" style="background-color: thistle;">
         <div class="vstack text-nowrap">
             <nav routerLink="main" routerLinkActive="active-nav">Quản lý sân</nav>
-            <nav routerLink="customer" routerLinkActive="active-nav">Quản lý khách hàng</nav>
+            <nav routerLink="khach-hang" routerLinkActive="active-nav">Quản lý khách hàng</nav>
+            <nav><a href="https://calendar.google.com/calendar/u/3/r?pli=1" target="_blank">Lịch đặt trước</a></nav>
         </div>
     </div>
-    <div class="col">
+    <div>
         <router-outlet></router-outlet>
     </div>
 </div>

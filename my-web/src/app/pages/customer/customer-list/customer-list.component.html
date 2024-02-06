@@ -1,1 +1,38 @@
-<p>customer-list works!</p>
+<div class="container">
+    <div></div>
+    <div>
+        <table>
+            <thead>
+                <th>STT</th>
+                <th>Họ tên</th>
+                <th>SĐT</th>
+                <th>Ngày đăng kí</th>
+                <th>Tổng giờ thuê</th>
+                <th>Hạng</th>
+                <th>Tác vụ</th>
+            </thead>
+            <tbody>
+                @for (kh of kh$; track $index) {
+                <tr (click)="selected = kh.id" data-bs-toggle="modal" data-bs-target="#mainModal">
+                    <td>{{$index + 1}}</td>
+                    <td class="text-start">{{kh.ten}}</td>
+                    <td>{{kh.sdt}}</td>
+                    <td>{{kh.ngayDK}}</td>
+                    <td>{{kh.gioThue}}</td>
+                    <td>@if (kh.VIP) { VIP } @else { Thường }</td>
+                    <td>huh</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--Modal-->
+<div class="modal fade" id="mainModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="mainModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <app-customer-detail></app-customer-detail>
+        </div>
+    </div>
+</div>
