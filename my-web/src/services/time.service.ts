@@ -25,8 +25,13 @@ export class timeService {
 
         let hour = parseInt(time.split(":")[0]);
         if (apm == "PM")
-            return `${hour + 12}:${time.split(":")[1]}`;
-        else return time;
+            if (hour != 12)
+                return `${hour + 12}:${time.split(":")[1]}`;
+            else return `${hour}:${time.split(":")[1]}`;
+        else 
+            if (hour == 12)  
+                return `00:${time.split(":")[1]}`;
+            else return time;
     }
 
     getTimeDiff(time1: string, time2: string) {
@@ -41,5 +46,19 @@ export class timeService {
             else if (minutes > 30 && minutes <= 40) minutes = 30;
 
         return (hours + (minutes / 60)).toFixed(1);
+    }
+
+    sortTime(arr: any){
+        arr.sort((a: any, b: any) => {
+            if (parseInt(a.checkIn.split(":")[0]) < parseInt(b.checkIn.split(":")[0])) return -1;
+            if (parseInt(a.checkIn.split(":")[0]) > parseInt(b.checkIn.split(":")[0])) return 1;
+        
+            if (parseInt(a.checkIn.split(":")[1]) < parseInt(b.checkIn.split(":")[1])) return -1;
+            if (parseInt(a.checkIn.split(":")[1]) > parseInt(a.checkIn.split(":")[1])) return 1;
+        
+            return 0;
+        });
+
+        return arr;
     }
 }

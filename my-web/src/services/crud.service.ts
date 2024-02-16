@@ -8,20 +8,29 @@ import { BehaviorSubject } from 'rxjs';
 
 export class crudService {
   firestore: Firestore = inject(Firestore);
-  db = getFirestore(); unsub: any;
+  db = getFirestore();
 
-  private editSource = new BehaviorSubject<any>(null);
-  editListener = this.editSource.asObservable(); 
+  private changeSource = new BehaviorSubject<any>(null);
+  changeListener = this.changeSource.asObservable(); 
 
   private infoSource = new BehaviorSubject<any>(null);
   currentInfo = this.infoSource.asObservable();
 
-  editInfo(info: any) { this.infoSource.next(info); }
+  clearChange() { this.changeSource.next(null); }
+  sendInfo(info: any) { this.infoSource.next(info); }
 
-  async createDocument(collection_: string, data: any, id_?: any){
+  async createDocument(collection_: string, data: any, id_?: any, component_?: string){
+    let collectionRef = collection(this.db, collection_);
     if (id_ == undefined)
-      await addDoc(collection(this.db, collection_), data);
+      await addDoc(collectionRef, data);
     else await setDoc(doc(this.db, collection_, id_), data);
+
+    let unsub = onSnapshot(collectionRef, (docs) => {
+      let arr: any = [];
+      docs.forEach(doc => arr.push(doc.data()));
+      this.changeSource.next({ component: component_, target: arr });
+    });
+    return () => unsub();
   }
 
   async getCollection(collection_: any) {
@@ -34,7 +43,7 @@ export class crudService {
     return lst;
   }
 
-  async findInDocument(_collection: string, field: string, equation: WhereFilterOp, value: any) {
+  async findInCollection(_collection: string, field: string, equation: WhereFilterOp, value: any) {
     let ref = collection(this.db, _collection);
     let query_ = query(ref, where(field, equation, value));
     let lst: any = [];
@@ -46,19 +55,24 @@ export class crudService {
     return lst;
   }
 
-  updateDocument(collection_: string, id: string, data: any) {
+  updateDocument(collection_: string, id: string, data: any, component_: string) {
     let Doc = doc(this.firestore, collection_, id);
     updateDoc(Doc, data);
 
     let unsub = onSnapshot(Doc, (doc) => {
-      this.editSource.next( { id: doc.id, ...doc.data() } );
+      this.changeSource.next( { component: component_, target: {id: doc.id, ...doc.data()} });
     });
     return () => unsub();
   }
 
-  deleteDocument(collection_: string, id: string, data: any) {
+  deleteDocument(collection_: string, id: string, component_: string) {
     let Doc = doc(this.firestore, collection_, id);
     deleteDoc(Doc);
+
+    let unsub = onSnapshot(Doc, (doc) => {
+      this.changeSource.next( { component: component_, target: {id: doc.id, ...doc.data()} });
+    });
+    return () => unsub();
   }
 
 }

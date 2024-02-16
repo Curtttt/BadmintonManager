@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { crudService } from '../../../../services/crud.service';
 import { SanDetailComponent } from '../san-detail/san-detail.component';
 import { Subscription } from 'rxjs';
@@ -13,20 +13,19 @@ import { timeService } from '../../../../services/time.service';
   styleUrl: './san-list.component.css'
 })
 
-export class SanListComponent implements OnDestroy, OnInit {
+export class SanListComponent implements OnDestroy {
   sans$: any; infoKH?: any = { nguoiDat: '', sdt: '', checkIn: '' };
   data!: any; selected: string = ""; state?: string; subscript!: Subscription;
 
 
-  constructor(private _service: crudService, private _time: timeService) {}
-
-  ngOnInit(): void {
-    this._service.getCollection("san").then(docs => { this.sans$ = docs; });
-    this.subscript = this._service.editListener.subscribe(change => {
-      if (change != null) {
-        this.sans$[(parseInt(change.id) - 1).toString()] = change;
-        const idx = this.sans$.findIndex((item: any) => item.id == change.id);
-        this.sans$[idx] = change;
+  constructor(private _service: crudService, private _time: timeService) {
+    _service.getCollection("san").then(docs => { this.sans$ = docs; });
+    this.subscript = this._service.changeListener.subscribe(change => {
+      if (change != null && change.component == "san") {
+        this.sans$[(parseInt(change.target.id) - 1).toString()] = change.target;
+        const idx = this.sans$.findIndex((item: any) => item.id == change.target.id);
+        this.sans$[idx] = change.target;
+        this._service.clearChange();
       }
     })
   }
@@ -36,7 +35,7 @@ export class SanListComponent implements OnDestroy, OnInit {
   datSan(id: string) {
     this.selected = id;
     this.state = "Đặt ngay";
-    this._service.editInfo(undefined);
+    this._service.sendInfo(null);
   }
 
   bill(id_: string) {
@@ -48,22 +47,22 @@ export class SanListComponent implements OnDestroy, OnInit {
     let san = (hoursUsed * dongiaSan);
     let vot = (data.chiTiet.thueVot * dongiaVot);
     
-    this._service.editInfo({...data.chiTiet, ...{activeHours: data.activeHours}, ...{sogioThue: hoursUsed}, ...{tongTien: [san, vot, san + vot]}});
+    this._service.sendInfo({...data.chiTiet, ...{activeHours: data.activeHours}, ...{sogioThue: hoursUsed}, ...{tongTien: [san, vot, san + vot]}});
     this.state = "Thanh toán";
   }
 
   huySan(id: string) {
     let data = {
-      chiTiet: { nguoiDat: '', sdt: '', checkIn: '' },
+      chiTiet: { nguoiDat: '', sdt: '', checkIn: '', checkOut: '' },
       trangThai: 'Sẵn sàng'
     }
-    this._service.updateDocument('san', this.selected, data);
+    this._service.updateDocument('san', this.selected, data, "san");
   }
 
   edit(id_: string, status: string) {
     this.selected = id_;
     this.state = "Chỉnh sửa";
     let target = this.sans$.find((doc: any) => doc.id == id_);
-    this._service.editInfo({...target.chiTiet, ...{trangThai: target.trangThai}});
+    this._service.sendInfo({...target.chiTiet, ...{trangThai: target.trangThai}, ...{component: "san"}});
   }
 } 

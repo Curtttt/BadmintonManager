@@ -2,7 +2,7 @@
     @for (san of sans$; track $index) {
     <div class="col mx-5">
         <div class="san">
-            <div class="mx-auto my-2">
+            <div class="mx-auto my-3">
                 Sân {{san.id}} - {{san.trangThai}}
             </div>
             @switch (san.trangThai) {
@@ -14,22 +14,20 @@
             </div>
             }
             @case ("Đang hoạt động") {
-            <div class="hstack gap-2 pt-4 mx-2 mt-4 fs-6 position-relative"
-                style="background-color: rgb(166, 164, 196);">
+            <div class="text-start ps-2 pt-4 mx-2 mt-4 fs-6 position-relative"
+                style="background-color: rgb(166, 164, 196); min-width: 235px">
                 <button (click)="edit(san.id, 'Đang hoạt động')" data-bs-toggle="modal" data-bs-target="#mainModal"
                     class="btn btn-info position-absolute top-0 start-50 translate-middle">Chỉnh sửa</button>
-                <div class="ms-4 text-end" style="width:fit-content">
-                    <p>KH:</p>
-                    <p>SĐT:</p>
-                    <p>Giờ vào:</p>
-                    <p>Thuê vợt:</p>
+                <div class="fw-normal mb-2">
+                    <span class="fw-bold">KH: </span>
+                    {{san.chiTiet.nguoiDat}}
+                    @if (san.chiTiet.VIP) { <img class="mb-2" width="25px" height="22px" src="\assets\vip.png"> }
                 </div>
-                <div class="vstack fw-normal text-start">
-                    <p>{{san.chiTiet.nguoiDat}}</p>
-                    <p>{{san.chiTiet.sdt}}</p>
-                    <p>{{san.chiTiet.checkIn}}</p>
-                    <p>{{san.chiTiet.thueVot}}</p>
+                <div class="fw-normal mb-2"><span class="fw-bold">SĐT: </span>{{san.chiTiet.sdt}}</div>
+                <div class="fw-normal mb-2"><span class="fw-bold">Thời gian: </span>{{san.chiTiet.checkIn}}
+                @if (san.checkOut != ''){ - {{san.chiTiet.checkOut}}}
                 </div>
+                <div class="fw-normal mb-2"><span class="fw-bold">Thuê vợt: </span>{{san.chiTiet.thueVot}}</div>
             </div>
             <div class="hstack mt-auto mx-auto mb-3 pt-2 gap-2">
                 <button (click)="bill(san.id)" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#mainModal">Thanh toán</button>
