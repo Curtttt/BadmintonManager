@@ -1,0 +1,8 @@
+{
+  "routes": [
+    "/doanh-thu",
+    "/khach-hang",
+    "/lich-dat-truoc",
+    "/trang-chu"
+  ]
+}
