@@ -1,13 +1,29 @@
 <div class="d-flex flex-nowrap">
-    <div class="flex-shrink-0" style="background-color: thistle;">
-        <div class="vstack text-nowrap" style="height: 1080px">
-            <nav routerLink="trang-chu" routerLinkActive="active-nav">Quản lý sân</nav>
-            <nav routerLink="khach-hang" routerLinkActive="active-nav">Quản lý khách hàng</nav>
-            <nav routerLink="doanh-thu" routerLinkActive="active-nav">Doanh thu ngày</nav>
-            <nav routerLink="lich-dat-truoc" routerLinkActive="active-nav">Lịch đặt trước</nav>
+    <div class="flex-shrink-0" style="background-color: rgb(150, 196, 150);">
+        <div class="vstack text-nowrap" style="height: 900px">
+            <nav routerLink="trang-chu" routerLinkActive="active-nav">
+                <img src="assets/nav/playground.png">
+                Quản lý sân
+            </nav>
+            <nav routerLink="khach-hang" routerLinkActive="active-nav">
+                <img src="assets/nav/customer.png">
+                Quản lý khách hàng
+            </nav>
+            <nav routerLink="dich-vu" routerLinkActive="active-nav">
+                <img src="assets/nav/drink.png">
+                Dịch vụ
+            </nav>
+            <nav routerLink="doanh-thu" routerLinkActive="active-nav">
+                <img src="assets/nav/revenue.png">
+                Doanh thu ngày
+            </nav>
+            <nav routerLink="lich-dat-truoc" routerLinkActive="active-nav">
+                <img src="assets/nav/booking.png">
+                Lịch đặt trước
+            </nav>
         </div>
     </div>
-    <div class="flex-fill">
+    <div class="flex-fill" style="min-width: 885px;">
         <router-outlet></router-outlet>
     </div>
 </div>

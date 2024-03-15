@@ -21,16 +21,13 @@ export class SanDetailComponent implements OnDestroy {
   infoForm: any; billForm: any; VIP: boolean = false;
   khach_lst: any; sdt_lst: any = [];
   payment: string = "Tiền mặt";
-  mark_txt: boolean = false; disabledInp: boolean = true;
 
   constructor(private fb: FormBuilder, private firestore: Firestore, private _service: crudService, public _time: timeService) {
     this.infoForm = this.fb.group({
       nguoiDat: ['', Validators.required],
       sdt: ['', [Validators.required, Validators.pattern("0[0-9]{9}")]],
       checkIn: '',
-      checkOut: '',
-      thueVot: false,
-      slVot: 0
+      checkOut: ''
     });
 
     this.billForm = this.fb.group({
@@ -52,25 +49,20 @@ export class SanDetailComponent implements OnDestroy {
           nguoiDat: this.infoKH.nguoiDat,
           sdt: this.infoKH.sdt,
           checkIn: this.infoKH.checkIn,
-          checkOut: '',
-          thueVot: this.infoKH.thueVot > 0 ? true : false,
-          slVot: this.infoKH.thueVot
+          checkOut: this.infoKH.checkOut
         })
-        this.infoKH.thueVot > 0 ? this.infoForm.get('slVot').enable() : this.infoForm.get('slVot').disable();
 
-        if (KH.hasOwnProperty("tongTien")){
-          this.billForm.get("total").setValue(KH.tongTien[2].toLocaleString('vi-VN'));}
+        if (KH.hasOwnProperty("tongTien")) {
+          this.billForm.get("total").setValue(KH.tongTien.toLocaleString('vi-VN'));
+        }
       }
       else {
         this.infoForm.setValue({
           nguoiDat: '',
           sdt: '',
           checkIn: this._time.getCurrentTime(),
-          checkOut: '',
-          thueVot: false,
-          slVot: 0
+          checkOut: ''
         })
-        this.infoForm.get('slVot').disable();
       }
     })
   }
@@ -79,7 +71,7 @@ export class SanDetailComponent implements OnDestroy {
 
   getName(sdt: string) {
     let khach = this.khach_lst.find((khach: any) => khach.sdt === sdt);
-    if (khach != undefined){
+    if (khach != undefined) {
       this.infoForm.get("nguoiDat").setValue(khach.ten);
       if (khach.hang == "VIP") this.VIP = true;
     }
@@ -89,37 +81,27 @@ export class SanDetailComponent implements OnDestroy {
     }
   }
 
-  cleanForm() { this.infoForm.reset(); }
+  cleanForm() {
+    this.infoForm.reset();
+    this.VIP = false;
+  }
 
   xacNhan(mode: string) {
-    if (this.infoForm.get('nguoiDat').valid && this.infoForm.get('sdt').valid) {
+    if (this.infoForm.valid) {
       let detail = this.infoForm.getRawValue();
-      detail["thueVot"] = detail.slVot;
       detail["VIP"] = this.VIP;
-
-      delete detail.slVot;
 
       let data = {
         chiTiet: detail,
         trangThai: "Đang hoạt động",
       }
-      this._service.updateDocument("san", this.maSan, data, "san");
-      if (mode == "new")
+      
+      if (mode == "new"){
+        this._service.updateDocument("san", this.maSan, data, "san");
         this.cleanForm();
-    }
-  }
-
-  checkVot(flag: boolean) {
-    if (flag == true)
-      this.infoForm.get('slVot').enable();
-    else this.infoForm.get('slVot').disable()
-  }
-
-  checkSlVot(event: any){
-    if (event.target.value <= 0){
-      this.infoForm.get("thueVot").setValue(false);
-      this.infoForm.get("slVot").disable();
-      this.infoForm.get("slVot").setValue(0);
+      }
+      else if (mode == "edit")
+      this._service.updateDocument("san", this.maSan, data, "san");
     }
   }
 
@@ -127,14 +109,7 @@ export class SanDetailComponent implements OnDestroy {
     this.billForm.get("total").enable();
   }
 
-  newTT(event: any) {
-    this.mark_txt = true;
-    this.billForm.get("total").disable();
-  }
-
-  rsTT() {
-    this.mark_txt = false;
-  }
+  newTT(event: any) { this.billForm.get("total").disable(); }
 
   saveBill(id_: string) {
     let info: any;
@@ -145,24 +120,11 @@ export class SanDetailComponent implements OnDestroy {
       sdt: this.infoKH.sdt,
       checkIn: this.infoKH.checkIn,
       sogioThue: this.infoKH.sogioThue,
-      thueVot: this.infoKH.thueVot,
-      soTien: parseInt(this.billForm.get("total").value) * 1000 - this.infoKH.tongTien[1],
+      soTien: parseInt(this.billForm.get("total").value) * 1000,
       hinhthucTT: this.billForm.get("payment").value,
       danhMuc: "Sân"
     }
     this._service.createDocument('doanhthuNgay', info);
-
-    if (this.infoKH.thueVot > 0) {
-      info = {
-        tenDV: "Thuê vợt",
-        soLuong: this.infoKH.thueVot,
-        thoiGian: this.infoKH.checkIn,
-        soTien: this.infoKH.tongTien[1],
-        danhMuc: "Dịch vụ",
-        hinhthucTT: this.billForm.get("payment").value
-      }
-      this._service.createDocument('doanhthuNgay', info);
-    }
 
     if (this.sdt_lst.includes(this.infoKH.sdt)) {
       let khachhang: any;
@@ -177,7 +139,7 @@ export class SanDetailComponent implements OnDestroy {
     }
 
     info = {
-      activeHours: parseFloat(this.infoKH.sogioThue) + this.infoKH.activeHours,
+      activeHours: parseFloat(this.infoKH.sogioThue.toFixed()) + this.infoKH.activeHours,
       chiTiet: { nguoiDat: '', sdt: '', checkIn: '' },
       trangThai: 'Sẵn sàng'
     }

@@ -11,7 +11,7 @@ export class timeService {
         let dd = String(today.getDate()).padStart(2, '0');
         let mm = String(today.getMonth() + 1).padStart(2, '0');
         let yyyy = today.getFullYear();
-        return `${mm}/${dd}/${yyyy}`;
+        return `${dd}/${mm}/${yyyy}`;
     }
 
     getCurrentTime() {
@@ -23,15 +23,18 @@ export class timeService {
         let time = inp.split(" ")[0];
         let apm = inp.split(" ")[1];
 
-        let hour = parseInt(time.split(":")[0]);
+        let hour_ = parseInt(time.split(":")[0]);
+        let output = time.split(":");
         if (apm == "PM")
-            if (hour != 12)
-                return `${hour + 12}:${time.split(":")[1]}`;
-            else return `${hour}:${time.split(":")[1]}`;
+            if (hour_ != 12)
+                return `${hour_ + 12}:${output[1]}`;
+            else return `${output[0]}:${output[1]}`;
         else 
-            if (hour == 12)  
-                return `00:${time.split(":")[1]}`;
-            else return time;
+            if (hour_ == 12)  
+                return `00:${output[1]}`;
+            else if (hour_ < 10)
+                return `0${output[0]}:${output[1]}`;
+            else return `${output[0]}:${output[1]}`;
     }
 
     getTimeDiff(time1: string, time2: string) {

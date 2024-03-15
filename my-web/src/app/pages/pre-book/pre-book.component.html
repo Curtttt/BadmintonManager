@@ -1,37 +1,37 @@
 <div class="container">
-    @if (lich$.length < soSan) { 
-        <div class="text-center w-100" style="margin-top: 100px;">
-            <div class="spinner-border" style="width: 100px; height: 100px" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+    @if (lich$.length < soSan) { <div class="text-center w-100" style="margin-top: 100px;">
+        <div class="spinner-border" style="width: 100px; height: 100px" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
-}
-@else {
-<div class="d-flex my-3 border-bottom">
-    <div class="switch object-fit-fill border">
-        <button [ngClass]="{'activeBtn': currentTab == 'all'}" (click)="getCurrentDB('all')">
-            <img class="ico_apm" src="/assets/apm.png">
-            Cả ngày (05:00 - 21:59)</button>
-        <button [ngClass]="{'activeBtn': currentTab == 'am'}" (click)="getCurrentDB('am')">
-            <img class="ico_apm" src="/assets/am.png">
-            Sáng (05:00 - 11:59)</button>
-        <button [ngClass]="{'activeBtn': currentTab == 'pm'}" (click)="getCurrentDB('pm')">
-            <img class="ico_apm" src="/assets/pm.png">
-            Chiều (12:00 - 21:59)</button>
     </div>
-</div>
-<div class="d-flex justify-content-around">
-    @for (lich of lich$; track $index) {
-    <div class="text-center">
-        <h4 (click)="newBooking($index)" style="cursor: pointer; width: 160px" data-bs-toggle="modal"
-            data-bs-target="#Modal">Sân {{$index + 1}}</h4>
-        <div class="vstack">
-            @for (item of lich; track $index) {
-            <div (click)="getInfo(item)" class="time-title" data-bs-toggle="modal" data-bs-target="#Modal">
-                {{item.checkIn}} - {{item.checkOut}}</div>}
+    }
+    @else {
+    <div class="my-3 border-bottom">
+        <div class="switch">
+            <button [ngClass]="{'activeBtn': currentTab == 'all'}" (click)="getCurrentDB('all')">
+                <img class="ico_apm" src="/assets/apm.png">
+                Cả ngày (05:00 - 21:59)</button>
+            <button [ngClass]="{'activeBtn': currentTab == 'am'}" (click)="getCurrentDB('am')">
+                <img class="ico_apm" src="/assets/am.png">
+                Sáng (05:00 - 11:59)</button>
+            <button [ngClass]="{'activeBtn': currentTab == 'pm'}" (click)="getCurrentDB('pm')">
+                <img class="ico_apm" src="/assets/pm.png">
+                Chiều (12:00 - 21:59)</button>
         </div>
+    </div>
+    <div class="d-flex justify-content-around">
+        @for (lich of lich$; track $index) {
+        <div class="text-center">
+            <h4 class="sanHeader" (click)="newBooking($index + 1)"
+                data-bs-toggle="modal" data-bs-target="#Modal">Sân {{$index + 1}}</h4>
+            <div class="vstack">
+                @for (item of lich; track item.id) {
+                <div (click)="detailBooking(item)" class="time-title position-relative" data-bs-toggle="modal"
+                    data-bs-target="#Modal">
+                    {{item.checkIn}} - {{item.checkOut}}</div>}
+            </div>
+        </div>}
     </div>}
-</div>}
 </div>
 <!-- Modal -->
 <div class="modal fade" id="Modal" tabindex="-1">
@@ -39,19 +39,21 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Đặt lịch trước sân {{selected}}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button (click)="rsForm()" type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form [formGroup]="infoForm">
                     <div>
-                        <label for="name" style="width: 120px" for="name">Họ tên:</label>
-                        <input type="text" id="name" formControlName="nguoiDat">
+                        <label for="name" for="name">Họ tên:</label>
+                        <input type="text" id="name" formControlName="nguoiDat" (change)="valid()">
+                        @if (VIP) { <img class="mb-1" width="29px" height="27px" src="/assets/vip.png"> }
                         @if (infoForm.get('nguoiDat')?.invalid && infoForm.get('nguoiDat').touched) {
                         <div class="text-danger">Thiếu thông tin</div>
                         }
                     </div>
                     <div class="my-2">
-                        <label style="width: 120px" for="sdt">SĐT:</label>
+                        <label for="sdt">SĐT:</label>
                         <input list="sdt_lst" type="tel" (change)="getName(this.infoForm.get('sdt').value)"
                             formControlName="sdt" id="sdt">
                         @if (infoForm.get('sdt')?.invalid && infoForm.get('sdt').touched) {
@@ -64,18 +66,36 @@
                         </datalist>
                     </div>
                     <div>
-                        <label style="width: 120px" for="checkIn">Thời gian vào:</label>
-                        <input type="time" formControlName="checkIn" id="checkIn">
+                        <label for="checkIn">Thời gian vào:</label>
+                        <input type="time" formControlName="checkIn" id="checkIn" (change)="valid()">
+                        @if (infoForm.get('checkIn')?.invalid && infoForm.get('sdt').touched) {
+                        <div class="text-danger">Thiếu giờ vào</div>
+                        }
                     </div>
                     <div class="my-2">
-                        <label style="width: 120px" for="checkOut">Thời gian ra:</label>
-                        <input type="time" formControlName="checkOut" id="checkOut">
+                        <label for="checkOut">Thời gian ra:</label>
+                        <input type="time" formControlName="checkOut" id="checkOut" (change)="valid()">
+                        @if (infoForm.get('checkOut')?.invalid && infoForm.get('sdt').touched) {
+                        <div class="text-danger">Thiếu giờ ra</div>}
+                        @if (!checkDiff) {<div class="mt-1 text-danger">Kiểm tra lại giờ vào-giờ ra</div>}
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Thoát</button>
-                <button type="button" (click)="saveBooking()" data-bs-dismiss="modal" class="btn btn-primary">Lưu</button>
+                @if (status == "new") {
+                <button id="save" type="button" (click)="saveBooking()" [disabled]="!checkBtn" data-bs-dismiss="modal"
+                    class="btn btn-primary">Lưu</button>
+                <button type="button" (click)="rsForm()" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Thoát</button>    
+                }
+                @else {
+                <button type="button" (click)="checkIn()" [disabled]="san_status[selected-1] == 'Đang hoạt động'"
+                    class="btn btn-success" data-bs-dismiss="modal">Vào sân</button>
+                <button type="button" (click)="updateBooking()" [disabled]="!checkBtn" class="btn btn-primary" data-bs-dismiss="modal">Cập
+                    nhật</button>
+                <button type="button" (click)="cancelBooking()" class="btn btn-danger" data-bs-dismiss="modal">Hủy
+                    lịch</button>
+                }
             </div>
         </div>
     </div>

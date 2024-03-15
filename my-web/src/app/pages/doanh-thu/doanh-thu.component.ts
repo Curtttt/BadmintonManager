@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { crudService } from '../../../services/crud.service';
 import { timeService } from '../../../services/time.service';
 import { CommonModule } from '@angular/common';
+import { ExcelService } from '../../../services/excel.service';
 
 @Component({
   selector: 'app-doanh-thu',
@@ -17,7 +18,7 @@ export class DoanhThuComponent {
   currentRev: any; tabLst: any = []; dbLst: any = [];
   loading = true;
 
-  constructor(private _service: crudService, private _time: timeService) {
+  constructor(private _service: crudService, private _time: timeService, private _xls: ExcelService) {
     this.today = _time.getCurrentDay();
     this.tabLst = ["Sân", "Dịch vụ", "Ăn uống"];
 
@@ -27,7 +28,7 @@ export class DoanhThuComponent {
         this.totalRevenue += this.calcRevenue(docs);
         if (tab == "Sân") this.currentRev = docs;
         setTimeout(() => this.loading = false, 200);
-        
+        console.log(this.dbLst);
       });
     });
 
@@ -45,5 +46,10 @@ export class DoanhThuComponent {
     this.currentTab = tab;
     let idx = this.tabLst.indexOf(tab);
     this.currentRev = this.dbLst[idx];
+  }
+
+  xlsx(){ 
+    
+    this._xls.exportExcel({title: this.today, data: {'Tiền mặt': this._xls.extractData(this.tienMat$), 'Chuyển khoản': this._xls.extractData(this.chuyenKhoan$)} }) 
   }
 }

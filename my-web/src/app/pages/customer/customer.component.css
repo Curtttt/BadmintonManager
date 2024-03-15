@@ -8,7 +8,7 @@ th {
 }
 
 tr:nth-child(even) {
-    background-color: lightblue;
+    background-color: rgb(202,234,202);
 }
 
 tr:hover {

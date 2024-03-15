@@ -1,20 +1,17 @@
 nav {
     padding: 20px;
+    padding-left: 10px;
     width: 100%;
     cursor: pointer;
     font-weight: bold;
 }
 
-a {
-    margin: 0 auto;
-    padding: 10px;
-    background-color: aquamarine;
-    font-weight: bold;
-    color: black;
-    border-radius: 10px;
-    text-decoration: none;
+nav img {
+    width: 40px;
+    height: 35px;
+    margin-right: 5px;
 }
 
 .active-nav {
-    background-color: darkmagenta;
+    background-color: rgb(81, 179, 81);
 }

@@ -16,15 +16,15 @@ import { timeService } from '../../../../services/time.service';
 export class SanListComponent implements OnDestroy {
   sans$: any; infoKH?: any = { nguoiDat: '', sdt: '', checkIn: '' };
   data!: any; selected: string = ""; state?: string; subscript!: Subscription;
+  loading: boolean = true;
 
 
   constructor(private _service: crudService, private _time: timeService) {
-    _service.getCollection("san").then(docs => { this.sans$ = docs; });
+    _service.getCollection("san").then(docs => { this.sans$ = docs; this.loading = false; console.log(this.sans$) });
     this.subscript = this._service.changeListener.subscribe(change => {
       if (change != null && change.component == "san") {
-        this.sans$[(parseInt(change.target.id) - 1).toString()] = change.target;
-        const idx = this.sans$.findIndex((item: any) => item.id == change.target.id);
-        this.sans$[idx] = change.target;
+        _service.getCollection("san").then(docs => { this.sans$ = docs; this.loading = false; console.log(this.sans$) });
+        // this.sans$[parseInt(change.target.id) - 1] = change.target;
         this._service.clearChange();
       }
     })
@@ -45,9 +45,8 @@ export class SanListComponent implements OnDestroy {
     let hoursUsed = this._time.getTimeDiff(this._time.getCurrentTime(), data.chiTiet.checkIn);
 
     let san = (hoursUsed * dongiaSan);
-    let vot = (data.chiTiet.thueVot * dongiaVot);
-    
-    this._service.sendInfo({...data.chiTiet, ...{activeHours: data.activeHours}, ...{sogioThue: hoursUsed}, ...{tongTien: [san, vot, san + vot]}});
+
+    this._service.sendInfo({ ...data.chiTiet, ...{ activeHours: data.activeHours }, ...{ sogioThue: hoursUsed }, ...{ tongTien: san } });
     this.state = "Thanh toán";
   }
 
@@ -56,13 +55,13 @@ export class SanListComponent implements OnDestroy {
       chiTiet: { nguoiDat: '', sdt: '', checkIn: '', checkOut: '' },
       trangThai: 'Sẵn sàng'
     }
-    this._service.updateDocument('san', this.selected, data, "san");
+    this._service.updateDocument('san', id, data, "san");
   }
 
   edit(id_: string, status: string) {
     this.selected = id_;
     this.state = "Chỉnh sửa";
     let target = this.sans$.find((doc: any) => doc.id == id_);
-    this._service.sendInfo({...target.chiTiet, ...{trangThai: target.trangThai}, ...{component: "san"}});
+    this._service.sendInfo({ ...target.chiTiet, ...{ trangThai: target.trangThai }, ...{ component: "san" } });
   }
 } 

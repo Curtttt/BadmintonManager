@@ -37,19 +37,11 @@
             <label style="width: 120px" for="checkOut">Thời gian ra:</label>
             <input type="time" formControlName="checkOut" id="checkOut">
         </div>
-        <div class="d-flex">
-            <div style="width: 120px">
-                <input type="checkbox" class="me-1" formControlName="thueVot" id="vot"
-                    (change)="checkVot(infoForm.get('thueVot').value)">
-                <label for="vot">Thuê vợt</label>
-            </div>
-            <input (change)="checkSlVot($event)" style="width: 50px;" type="number" formControlName="slVot">
-        </div>
     </form>
 </div>
 <div class="modal-footer">
     <button type="button" (click)="cleanForm()" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
-    <button type="button" (click)="xacNhan('new')" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
+    <button type="button" [disabled]="!infoForm.valid" (click)="xacNhan('new')" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
 </div>
 }
 @case ("Chỉnh sửa") {
@@ -82,23 +74,19 @@
                 }
             </datalist>
         </div>
-        <div>
+        <div class="my-2">
             <label style="width: 120px" for="checkIn">Thời gian vào:</label>
             <input type="time" formControlName="checkIn" id="checkIn">
         </div>
-        <div class="d-flex my-2">
-            <div style="width: 120px">
-                <input type="checkbox" id="vot" (change)="checkVot(infoForm.get('thueVot').value)" class="me-1"
-                    formControlName="thueVot">
-                <label for="vot">Thuê vợt</label>
-            </div>
-            <input (change)="checkSlVot($event)" style="width: 50px;" type="number" formControlName="slVot">
+        <div>
+            <label style="width: 120px" for="checkOut">Thời gian ra:</label>
+            <input type="time" formControlName="checkOut" id="checkOut">
         </div>
     </form>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
-    <button type="button" (click)="xacNhan('edit')" data-bs-dismiss="modal" class="btn btn-primary">Cập nhật</button>
+    <button type="button" [disabled]="!infoForm.valid" (click)="xacNhan('edit')" data-bs-dismiss="modal" class="btn btn-primary">Cập nhật</button>
 </div>
 }
 @case ("Thanh toán") {
@@ -117,8 +105,7 @@
             <p>Giờ ra:</p>
             <p>Tổng thời gian:</p>
             <p>Tiền thuê sân:</p>
-            <p>Tiền thuê vợt <span>({{infoKH.thueVot}} cái)</span>:</p>
-            <label style="margin-bottom: 16px;" (click)="editTT()" for="tt"><span class="text-decoration-underline">Tổng tiền</span><span class="text-danger" *ngIf="mark_txt"> (đã sửa)</span>:</label>
+            <label class="text-decoration-underline" style="margin-bottom: 16px;" (click)="editTT()" for="tt">Tổng tiền:</label>
             <p>Hình thức thanh toán:</p>
         </div>
         <div [formGroup]="billForm" class="d-flex-column">
@@ -127,8 +114,7 @@
             <p>{{infoKH.checkIn}}</p>
             <p>{{_time.getCurrentTime()}}</p>
             <p>{{infoKH.sogioThue}} h</p>
-            <p>{{infoKH.tongTien[0].toLocaleString("vi-VN")}} vnđ</p>
-            <p>{{infoKH.tongTien[1].toLocaleString("vi-VN")}} vnđ</p>
+            <p>{{infoKH.tongTien.toLocaleString("vi-VN")}} vnđ</p>
             <input type="string" id="tt" style="width: 90px; border: none; margin-bottom: 16px"
                 (keyup.enter)="newTT($event)" formControlName="total">vnđ
             <div>
@@ -145,7 +131,7 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button type="button" (click)="rsTT()" class="btn btn-primary" data-bs-dismiss="modal">Thoát</button>
+    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Thoát</button>
     <button type="button" (click)="saveBill(maSan)" data-bs-dismiss="modal" class="btn btn-success">Thanh toán</button>
 </div>
 }

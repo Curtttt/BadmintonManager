@@ -11,7 +11,7 @@
     <div>
         <div class="d-flex my-3">
             <h2>{{totalRevenue.toLocaleString("vi-VN")}} vnđ</h2>
-            <button class="excel">
+            <button class="excel" (click)="xlsx()">
                 <img width="36px" height="36px" src="/assets/xls.png">
                 Xuất file excel
             </button>
@@ -65,12 +65,12 @@
                         <td class="text-start">{{data.ten}}</td>
                         <td>{{data.sdt}}</td>
                         <td>{{data.sogioThue}}</td>
-                        <td>{{data.hinhthucTT}}</td>
+                        <td style="min-width: 122px;">{{data.hinhthucTT}}</td>
                         <td class="text-end">{{data.soTien.toLocaleString("vi-VN")}} vnđ</td>
                     </tr>
                     }
                 </tbody>}
-                @else {
+                <!-- @else {
                 <thead>
                     <th>STT</th>
                     <th>Tên dịch vụ</th>
@@ -88,7 +88,7 @@
                         <td class="text-end">{{data.soTien.toLocaleString("vi-VN")}} vnđ</td>
                     </tr>
                     }
-                </tbody>}
+                </tbody>} -->
             </table>
         </div>
     </div>}

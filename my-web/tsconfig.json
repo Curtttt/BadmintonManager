@@ -9,6 +9,11 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "exceljs": [
+        "./node_modules/exceljs/dist/exceljs.min"
+      ]
+    },
     "skipLibCheck": true,
     "esModuleInterop": true,
     "sourceMap": true,

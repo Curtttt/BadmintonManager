@@ -1,3 +1,5 @@
+label { width: 120px;}
+
 .time-title {
     cursor: pointer;
     padding: 5px 30px;
@@ -9,10 +11,28 @@
     background-color: rgb(208, 207, 207);
 }
 
+.switch {
+    object-fit: fill;
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    text-wrap: nowrap;
+}
+
 .switch button {
     padding: 5px 10px;
     border: none;
     background-color: transparent;
+}
+
+.sanHeader{
+    margin: 15px auto;
+    padding: 5px 10px;
+    background-color: #FFCC66;
+    display: block;
+    border-radius: 10px;
+    cursor: pointer; 
+    width: 160px
 }
 
 .switch button:nth-child(2) {

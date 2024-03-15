@@ -1,8 +1,16 @@
+@if (loading) {
+<div class="text-center w-100" style="margin-top: 100px;">
+    <div class="spinner-border" style="width: 100px; height: 100px" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+}
+@else {
 <div class="row row-cols-auto justify-content-center my-auto">
     @for (san of sans$; track $index) {
     <div class="col mx-5">
         <div class="san">
-            <div class="mx-auto my-3">
+            <div class="sanHeader" [style.background-color]="san.trangThai == 'Sẵn sàng' ? '#66CC66' : '#FFFF66'">
                 Sân {{san.id}} - {{san.trangThai}}
             </div>
             @switch (san.trangThai) {
@@ -25,19 +33,20 @@
                 </div>
                 <div class="fw-normal mb-2"><span class="fw-bold">SĐT: </span>{{san.chiTiet.sdt}}</div>
                 <div class="fw-normal mb-2"><span class="fw-bold">Thời gian: </span>{{san.chiTiet.checkIn}}
-                @if (san.checkOut != ''){ - {{san.chiTiet.checkOut}}}
+                    @if (san.checkOut != ''){ - {{san.chiTiet.checkOut}}}
                 </div>
-                <div class="fw-normal mb-2"><span class="fw-bold">Thuê vợt: </span>{{san.chiTiet.thueVot}}</div>
             </div>
             <div class="hstack mt-auto mx-auto mb-3 pt-2 gap-2">
-                <button (click)="bill(san.id)" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#mainModal">Thanh toán</button>
-                <button (click)="selected = san.id" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#huyModal">Hủy sân</button>
+                <button (click)="bill(san.id)" class="btn btn-success" data-bs-toggle="modal"
+                    data-bs-target="#mainModal">Thanh toán</button>
+                <button (click)="selected = san.id" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#huyModal">Hủy sân</button>
             </div>
             }
             }
         </div>
     </div>}
-</div>
+</div>}
 <!--Modal-->
 <div class="modal fade" id="mainModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="mainModalLabel" aria-hidden="true">
@@ -60,7 +69,6 @@
                 <h4>Xác nhận hủy lịch sân {{selected}}?</h4>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Thoát</button>
                 <button type="button" (click)="huySan(selected)" class="btn btn-danger" data-bs-dismiss="modal">Xác
                     nhận</button>
             </div>

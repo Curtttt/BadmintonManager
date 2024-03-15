@@ -8,7 +8,7 @@
     }
     @else {
     <div>
-        <button class="btn btn-primary">Đăng kí mới</button>
+        <button class="btn btn-success">Đăng kí mới</button>
     </div>
     <div>
         <table>
@@ -25,11 +25,11 @@
                 @for (kh of kh$; track $index) {
                 <tr (click)="getDetail(kh.id, $index)" data-bs-toggle="modal" data-bs-target="#mainModal">
                     <td>{{$index + 1}}</td>
-                    <td class="text-start">{{kh.ten}}</td>
+                    <td class="text-start text-nowrap">{{kh.ten}}</td>
                     <td>{{kh.sdt}}</td>
                     <td>{{kh.ngayDK}}</td>
                     <td>{{kh.gioThue}}</td>
-                    <td class="text-end">{{kh?.tongTien.toLocaleString("vi-VN")}} vnđ</td>
+                    <td class="text-end text-nowrap">{{kh?.tongTien.toLocaleString("vi-VN")}} vnđ</td>
                     <td> @if (kh.hang == "VIP") { <img width="25px" height="22px" src="/assets/vip.png">}</td>
                 </tr>
                 }
@@ -124,7 +124,7 @@
             <div class="modal-footer">
                 <button type="button" (click)="this.dkiForm.reset()" class="btn btn-secondary"
                     data-bs-dismiss="modal">Thoát</button>
-                <button (click)="func('new')" type="button" class="btn btn-primary" data-bs-dismiss="modal">Xác nhận</button>
+                <button type="button" (click)="func('new')"  [disabled]="!dkiForm.valid" class="btn btn-primary" data-bs-dismiss="modal">Xác nhận</button>
             </div>
         </div>
     </div>

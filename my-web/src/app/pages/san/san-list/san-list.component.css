@@ -11,6 +11,13 @@
     font-weight: bold;
 }
 
+.sanHeader{
+    margin: 15px auto;
+    padding: 5px 10px;
+    display: block;
+    border-radius: 10px;
+}
+
 .col {
     margin: 20px 0;
     display: flex;
