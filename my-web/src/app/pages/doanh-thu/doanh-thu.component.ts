@@ -19,7 +19,7 @@ export class DoanhThuComponent {
   loading = true;
 
   constructor(private _service: crudService, private _time: timeService, private _xls: ExcelService) {
-    this.today = _time.getCurrentDay();
+    this.today = _time.getDay("today");
     this.tabLst = ["Sân", "Dịch vụ", "Ăn uống"];
 
     this.tabLst.forEach((tab: any) => {
@@ -28,7 +28,6 @@ export class DoanhThuComponent {
         this.totalRevenue += this.calcRevenue(docs);
         if (tab == "Sân") this.currentRev = docs;
         setTimeout(() => this.loading = false, 200);
-        console.log(this.dbLst);
       });
     });
 
@@ -49,7 +48,7 @@ export class DoanhThuComponent {
   }
 
   xlsx(){ 
-    
     this._xls.exportExcel({title: this.today, data: {'Tiền mặt': this._xls.extractData(this.tienMat$), 'Chuyển khoản': this._xls.extractData(this.chuyenKhoan$)} }) 
+    this.dbLst[0].forEach((doc: any) => this._service.deleteDocument("doanhthuNgay", doc.id, ""));
   }
 }

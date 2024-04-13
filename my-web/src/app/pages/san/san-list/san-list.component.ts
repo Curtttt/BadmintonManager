@@ -20,11 +20,10 @@ export class SanListComponent implements OnDestroy {
 
 
   constructor(private _service: crudService, private _time: timeService) {
-    _service.getCollection("san").then(docs => { this.sans$ = docs; this.loading = false; console.log(this.sans$) });
+    _service.getCollection("san").then(docs => { this.sans$ = docs; this.loading = false; });
     this.subscript = this._service.changeListener.subscribe(change => {
       if (change != null && change.component == "san") {
-        _service.getCollection("san").then(docs => { this.sans$ = docs; this.loading = false; console.log(this.sans$) });
-        // this.sans$[parseInt(change.target.id) - 1] = change.target;
+        _service.getCollection("san").then(docs => { this.sans$ = docs; this.loading = false; });
         this._service.clearChange();
       }
     })
@@ -35,7 +34,6 @@ export class SanListComponent implements OnDestroy {
   datSan(id: string) {
     this.selected = id;
     this.state = "Đặt ngay";
-    this._service.sendInfo(null);
   }
 
   bill(id_: string) {
@@ -55,7 +53,12 @@ export class SanListComponent implements OnDestroy {
       chiTiet: { nguoiDat: '', sdt: '', checkIn: '', checkOut: '' },
       trangThai: 'Sẵn sàng'
     }
+    
+    this.loading = true;
     this._service.updateDocument('san', id, data, "san");
+    setTimeout(() => {
+      this.loading = false;
+    }, 2000);
   }
 
   edit(id_: string, status: string) {

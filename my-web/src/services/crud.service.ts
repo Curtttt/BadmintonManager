@@ -11,6 +11,7 @@ export class crudService {
   db = getFirestore();
 
   private changeSource = new BehaviorSubject<any>(null);
+
   changeListener = this.changeSource.asObservable();
 
   private infoSource = new BehaviorSubject<any>(null);
@@ -48,39 +49,40 @@ export class crudService {
       let docRef = doc(this.db, _collection, value);
       let docSnap = await getDoc(docRef);
       return docSnap.data();
-      }
-      else {
-        let ref = collection(this.db, _collection);
-        let query_ = query(ref, where(field, equation, value));
-        let lst: any = [];
-        let querySnapshot = await getDocs(query_);
-        querySnapshot.forEach((doc) => {
-          let data = { id: doc.id, ...doc.data() };
-          lst.push(data);
-        });
-        return lst;
-      }
-
     }
-
-    async updateDocument(collection_: string, id: string, data: any, component_: string) {
-      let Doc = doc(this.firestore, collection_, id);
-      await updateDoc(Doc, data);
-
-      let unsub = onSnapshot(Doc, (doc) => {
-        this.changeSource.next({ component: component_, target: { id: doc.id, ...doc.data() } });
+    else {
+      let ref = collection(this.db, _collection);
+      let query_ = query(ref, where(field, equation, value));
+      let lst: any = [];
+      let querySnapshot = await getDocs(query_);
+      querySnapshot.forEach((doc) => {
+        let data = { id: doc.id, ...doc.data() };
+        lst.push(data);
       });
-      return () => unsub();
-    }
-
-    async deleteDocument(collection_: string, id: string, component_: string) {
-      let Doc = doc(this.firestore, collection_, id);
-      await deleteDoc(Doc);
-
-      let unsub = onSnapshot(Doc, (doc) => {
-        this.changeSource.next({ component: component_, target: { id: doc.id, ...doc.data() } });
-      });
-      return () => unsub();
+      return lst;
     }
 
   }
+
+  async updateDocument(collection_: string, id: string, data: any, component_: string) {
+    let Doc = doc(this.firestore, collection_, id);
+    await updateDoc(Doc, data);
+
+    let unsub = onSnapshot(Doc, (doc) => {
+      this.changeSource.next({ component: component_, target: { id: doc.id, ...doc.data() } });
+    });
+    return () => unsub();
+  }
+
+  async deleteDocument(collection_: string, id: string, component_: string) {
+    let Doc = doc(this.firestore, collection_, id);
+    await deleteDoc(Doc);
+
+    let unsub = onSnapshot(Doc, (doc) => {
+      if (component_ != "")
+        this.changeSource.next({ component: component_, target: { id: doc.id, ...doc.data() } });
+    });
+    return () => unsub();
+  }
+
+}

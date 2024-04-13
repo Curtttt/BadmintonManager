@@ -1,5 +1,5 @@
 <div class="container">
-    @if (lich$.length < soSan) { <div class="text-center w-100" style="margin-top: 100px;">
+    @if (lich$.length < soSan || loading) { <div class="text-center w-100" style="margin-top: 100px;">
         <div class="spinner-border" style="width: 100px; height: 100px" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
@@ -23,10 +23,14 @@
         @for (lich of lich$; track $index) {
         <div class="text-center">
             <h4 class="sanHeader" (click)="newBooking($index + 1)"
-                data-bs-toggle="modal" data-bs-target="#Modal">Sân {{$index + 1}}</h4>
+                data-bs-toggle="modal" data-bs-target="#Modal">Sân {{$index + 1}}
+                <span>
+                    <img class="mb-1 ms-2" width="20px" height="20px" src="/assets/new.png">
+                </span>
+            </h4>
             <div class="vstack">
                 @for (item of lich; track item.id) {
-                <div (click)="detailBooking(item)" class="time-title position-relative" data-bs-toggle="modal"
+                <div [style.background-color]="item.vip ? '#FFFF00' : '#FFFFFF'" (click)="detailBooking(item)" class="time-title position-relative" data-bs-toggle="modal"
                     data-bs-target="#Modal">
                     {{item.checkIn}} - {{item.checkOut}}</div>}
             </div>

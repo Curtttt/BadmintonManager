@@ -10,7 +10,7 @@
     <form [formGroup]="infoForm">
         <div>
             <label for="name" style="width: 120px" for="name">Họ tên:</label>
-            <input type="text" id="name" formControlName="nguoiDat">
+            <input type="text" id="name" formControlName="nguoiDat" (change)="valid()">
             @if (VIP) { <img class="mb-1" width="29px" height="27px" src="/assets/vip.png"> }
             @if (infoForm.get('nguoiDat')?.invalid && infoForm.get('nguoiDat').touched) {
             <div class="text-danger">Thiếu thông tin</div>
@@ -18,8 +18,7 @@
         </div>
         <div class="my-2">
             <label style="width: 120px" for="sdt">SĐT:</label>
-            <input list="sdt_lst" type="tel" (change)="getName(this.infoForm.get('sdt').value)" formControlName="sdt"
-                id="sdt">
+            <input list="sdt_lst" type="tel" (change)="getName(this.infoForm.get('sdt').value)" formControlName="sdt" id="sdt" (change)="valid()">
             @if (infoForm.get('sdt')?.invalid && infoForm.get('sdt').touched) {
             <div class="text-danger">SĐT sai định dạng</div>
             }
@@ -31,17 +30,18 @@
         </div>
         <div>
             <label style="width: 120px" for="checkIn">Thời gian vào:</label>
-            <input type="time" formControlName="checkIn" id="checkIn">
+            <input type="time" formControlName="checkIn" id="checkIn" (change)="valid()">
         </div>
         <div class="my-2">
             <label style="width: 120px" for="checkOut">Thời gian ra:</label>
-            <input type="time" formControlName="checkOut" id="checkOut">
+            <input type="time" formControlName="checkOut" id="checkOut" (change)="valid()">
+            @if (!checkDiff) {<div class="mt-1 text-danger">Kiểm tra lại giờ vào-giờ ra</div>}
         </div>
     </form>
 </div>
 <div class="modal-footer">
     <button type="button" (click)="cleanForm()" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
-    <button type="button" [disabled]="!infoForm.valid" (click)="xacNhan('new')" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
+    <button type="button" [disabled]="!checkBtn" (click)="xacNhan('new')" data-bs-dismiss="modal" class="btn btn-primary">Xác nhận</button>
 </div>
 }
 @case ("Chỉnh sửa") {
@@ -55,7 +55,7 @@
     <form [formGroup]="infoForm">
         <div>
             <label for="name" style="width: 120px" for="name">Họ tên:</label>
-            <input type="text" id="name" formControlName="nguoiDat" [value]="infoKH.nguoiDat">
+            <input type="text" id="name" formControlName="nguoiDat" [value]="infoKH.nguoiDat" (change)="valid()">
             @if (VIP) { <img class="mb-1" width="29px" height="27px" src="/assets/vip.png"> }
             @if (infoForm.get('nguoiDat').invalid) {
             <div class="text-danger">Thiếu thông tin</div>
@@ -63,8 +63,7 @@
         </div>
         <div class="my-2">
             <label style="width: 120px" for="sdt">SĐT:</label>
-            <input list="sdt_lst" type="tel" (change)="getName(this.infoForm.get('sdt').value)" formControlName="sdt"
-                id="sdt" [value]="infoKH.sdt">
+            <input list="sdt_lst" type="tel" (change)="getName(this.infoForm.get('sdt').value)" formControlName="sdt" id="sdt" [value]="infoKH.sdt" (change)="valid()">
             @if (infoForm.get('sdt').invalid) {
             <div class="text-danger">SĐT sai định dạng</div>
             }
@@ -76,17 +75,18 @@
         </div>
         <div class="my-2">
             <label style="width: 120px" for="checkIn">Thời gian vào:</label>
-            <input type="time" formControlName="checkIn" id="checkIn">
+            <input type="time" formControlName="checkIn" id="checkIn" (change)="valid()">
         </div>
         <div>
             <label style="width: 120px" for="checkOut">Thời gian ra:</label>
-            <input type="time" formControlName="checkOut" id="checkOut">
+            <input type="time" formControlName="checkOut" id="checkOut" (change)="valid()">
+            @if (!checkDiff) {<div class="mt-1 text-danger">Kiểm tra lại giờ vào-giờ ra</div>}
         </div>
     </form>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Hủy</button>
-    <button type="button" [disabled]="!infoForm.valid" (click)="xacNhan('edit')" data-bs-dismiss="modal" class="btn btn-primary">Cập nhật</button>
+    <button type="button" [disabled]="!checkBtn" (click)="xacNhan('edit')" data-bs-dismiss="modal" class="btn btn-primary">Cập nhật</button>
 </div>
 }
 @case ("Thanh toán") {
@@ -115,7 +115,7 @@
             <p>{{_time.getCurrentTime()}}</p>
             <p>{{infoKH.sogioThue}} h</p>
             <p>{{infoKH.tongTien.toLocaleString("vi-VN")}} vnđ</p>
-            <input type="string" id="tt" style="width: 90px; border: none; margin-bottom: 16px"
+            <input type="number" id="tt" style="width: 90px; border: none; margin-bottom: 16px"
                 (keyup.enter)="newTT($event)" formControlName="total">vnđ
             <div>
                 <div>

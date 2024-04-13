@@ -20,7 +20,7 @@ export class SanDetailComponent implements OnDestroy {
   infoKH: any; subscript: Subscription;
   infoForm: any; billForm: any; VIP: boolean = false;
   khach_lst: any; sdt_lst: any = [];
-  payment: string = "Tiền mặt";
+  payment: string = "Tiền mặt"; checkBtn: boolean = false; checkDiff: boolean = true;
 
   constructor(private fb: FormBuilder, private firestore: Firestore, private _service: crudService, public _time: timeService) {
     this.infoForm = this.fb.group({
@@ -74,6 +74,7 @@ export class SanDetailComponent implements OnDestroy {
     if (khach != undefined) {
       this.infoForm.get("nguoiDat").setValue(khach.ten);
       if (khach.hang == "VIP") this.VIP = true;
+      else this.VIP = false;
     }
     else {
       this.infoForm.get("nguoiDat").setValue("");
@@ -84,32 +85,53 @@ export class SanDetailComponent implements OnDestroy {
   cleanForm() {
     this.infoForm.reset();
     this.VIP = false;
+    this.checkDiff = true;
   }
 
   xacNhan(mode: string) {
-    if (this.infoForm.valid) {
-      let detail = this.infoForm.getRawValue();
-      detail["VIP"] = this.VIP;
+    let detail = this.infoForm.getRawValue();
+    detail["VIP"] = this.VIP;
 
-      let data = {
-        chiTiet: detail,
-        trangThai: "Đang hoạt động",
-      }
-      
-      if (mode == "new"){
-        this._service.updateDocument("san", this.maSan, data, "san");
-        this.cleanForm();
-      }
-      else if (mode == "edit")
+    let data = {
+      chiTiet: detail,
+      trangThai: "Đang hoạt động",
+    }
+
+    if (mode == "new") {
       this._service.updateDocument("san", this.maSan, data, "san");
+      this.cleanForm();
+    }
+    else if (mode == "edit")
+      this._service.updateDocument("san", this.maSan, data, "san");
+  }
+
+  valid() {
+    if (this.infoForm.valid)
+      if (this.infoForm.get("checkOut").value != "")
+        if (this._time.getTimeDiff(this.infoForm.get("checkOut").value, this.infoForm.get("checkIn").value) >= 1) {
+          this.checkBtn = true;
+          this.checkDiff = true;
+        }
+        else {
+          this.checkBtn = false;
+          this.checkDiff = false;
+        }
+      else {
+        this.checkBtn = true;
+        this.checkDiff = true;
+      }
+    else {
+      this.checkBtn = false;
     }
   }
 
-  editTT() {
-    this.billForm.get("total").enable();
-  }
+  editTT() { this.billForm.get("total").enable(); }
 
-  newTT(event: any) { this.billForm.get("total").disable(); }
+  newTT(event: any) { 
+    let editedMoney = parseInt(this.billForm.get("total").value) * 1000;
+    this.billForm.get("total").setValue(editedMoney.toLocaleString("vi-VN"));
+    this.billForm.get("total").disable(); 
+  }
 
   saveBill(id_: string) {
     let info: any;
@@ -139,8 +161,8 @@ export class SanDetailComponent implements OnDestroy {
     }
 
     info = {
-      activeHours: parseFloat(this.infoKH.sogioThue.toFixed()) + this.infoKH.activeHours,
-      chiTiet: { nguoiDat: '', sdt: '', checkIn: '' },
+      activeHours: parseFloat(this.infoKH.sogioThue).toFixed(1) + this.infoKH.activeHours,
+      chiTiet: { nguoiDat: '', sdt: '', checkIn: '', checkOut: ''},
       trangThai: 'Sẵn sàng'
     }
     this._service.updateDocument("san", id_, info, "san");

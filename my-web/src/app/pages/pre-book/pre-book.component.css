@@ -20,7 +20,7 @@ label { width: 120px;}
 }
 
 .switch button {
-    padding: 5px 10px;
+    padding: 5px;
     border: none;
     background-color: transparent;
 }
@@ -28,7 +28,7 @@ label { width: 120px;}
 .sanHeader{
     margin: 15px auto;
     padding: 5px 10px;
-    background-color: #FFCC66;
+    background-color: #339933;
     display: block;
     border-radius: 10px;
     cursor: pointer; 

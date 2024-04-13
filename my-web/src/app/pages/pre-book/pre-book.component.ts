@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 export class PreBookComponent implements OnInit, OnDestroy {
   khach_lst: any = []; sdt_lst: any = []; infoKH: any; san_status: any = [];
   soSan: number = 5; VIP: boolean = false; status: string = "new";
-  infoForm: any; selected!: number; currentTab: string = "all";
+  infoForm: any; selected!: number; currentTab: string = "all"; loading: boolean = false;
   lichAM$: any = []; lichPM$: any = []; lich$: any = []; lichAll$: any = [];
   subscript: any; id!: string; checkBtn: boolean = false; checkDiff: boolean = true;
 
@@ -60,11 +60,9 @@ export class PreBookComponent implements OnInit, OnDestroy {
     this.san_status = [];
     this._service.getCollection("san").then(san =>
       san.forEach((s: any) => { this.san_status.push(s.trangThai) }));
-    console.log("test");
     for (let i = 1; i <= this.soSan; i++) {
       this._service.findInCollection("datTruoc", "san", "==", i.toString()).then(docs => {
         arr = this._time.sortTime(docs);
-        console.log(arr, i);
         this.lichAll$.push(arr);
 
         AM = []; PM = [];
@@ -96,9 +94,13 @@ export class PreBookComponent implements OnInit, OnDestroy {
     if (khach != undefined) {
       this.infoForm.get("nguoiDat").setValue(khach.ten);
       if (khach.hang == "VIP") this.VIP = true;
+      else this.VIP = false;
     }
-    else this.infoForm.get("nguoiDat").setValue("");
-
+    else {
+      this.infoForm.get("nguoiDat").setValue("");
+      this.VIP = false;
+    }
+    
     this.valid();
   }
 
@@ -117,10 +119,12 @@ export class PreBookComponent implements OnInit, OnDestroy {
   saveBooking() {
     let info: any;
     if (this.infoForm.valid) {
+      let khach = this.khach_lst.find((khach: any) => khach.sdt === this.infoForm.get("sdt").value);
       info = {
         san: this.selected?.toString(),
         ten: this.infoForm.get("nguoiDat").value,
         sdt: this.infoForm.get("sdt").value,
+        vip: khach != undefined && khach.hang == "VIP" ? true : false,
         checkIn: this.infoForm.get("checkIn").value,
         checkOut: this.infoForm.get("checkOut").value,
         time: parseInt(this.infoForm.get("checkIn").value.split(':')[0]) < 12 ? 'am' : 'pm',
@@ -136,7 +140,7 @@ export class PreBookComponent implements OnInit, OnDestroy {
     let khach = this.khach_lst.find((khach: any) => khach.sdt === info.sdt);
     if (khach != undefined && khach.hang == "VIP") this.VIP = true;
     this.checkBtn = false;
-    console.log(this.id);
+
     this.infoForm.setValue({
       nguoiDat: info.ten,
       sdt: info.sdt,
@@ -146,7 +150,11 @@ export class PreBookComponent implements OnInit, OnDestroy {
   }
 
   cancelBooking() {
+    this.loading = true;
     this._service.deleteDocument("datTruoc", this.id, "booking");
+    setTimeout(() => {
+      this.loading = false;
+    }, 2000);
   }
 
   valid() {
@@ -187,7 +195,8 @@ export class PreBookComponent implements OnInit, OnDestroy {
       trangThai: "Đang hoạt động"
     }
     this._service.updateDocument("san", this.selected.toString(), info, "");
-    this._service.deleteDocument("datTruoc", this.id, "booking");
+    if (!this.VIP)
+      this._service.deleteDocument("datTruoc", this.id, "booking");
     this.router.navigate(["trang-chu"]);
   };
 }

@@ -1,5 +1,5 @@
-<div class="container" data-bs-toggle="modal" data-bs-target="#dkiModal">
-    @if (kh$ == null) {
+<div class="container">
+    @if (loading) {
     <div class="text-center w-100" style="margin-top: 100px;">
         <div class="spinner-border" style="width: 100px; height: 100px" role="status">
             <span class="visually-hidden">Loading...</span>
@@ -7,17 +7,18 @@
     </div>
     }
     @else {
-    <div>
-        <button class="btn btn-success">Đăng kí mới</button>
+    <div class="my-3">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dkiModal">Đăng kí mới</button>
     </div>
-    <div>
+    <div class="d-flex justify-content-center">
         <table>
             <thead>
                 <th>STT</th>
-                <th>Họ tên</th>
+                <th style="min-width: 140px;">Họ tên</th>
                 <th>SĐT</th>
-                <th>Ngày đăng kí</th>
-                <th>Tổng giờ thuê</th>
+                <th style="min-width: 140px;">Ngày đăng kí</th>
+                <th style="min-width: 140px;">Thời hạn VIP</th>
+                <th>Đã thuê</th>
                 <th>Tổng hóa đơn</th>
                 <th>Hạng</th>
             </thead>
@@ -28,6 +29,7 @@
                     <td class="text-start text-nowrap">{{kh.ten}}</td>
                     <td>{{kh.sdt}}</td>
                     <td>{{kh.ngayDK}}</td>
+                    <td>{{kh.ngayVIP}}</td>
                     <td>{{kh.gioThue}}</td>
                     <td class="text-end text-nowrap">{{kh?.tongTien.toLocaleString("vi-VN")}} vnđ</td>
                     <td> @if (kh.hang == "VIP") { <img width="25px" height="22px" src="/assets/vip.png">}</td>
@@ -51,42 +53,53 @@
             <div class="modal-body">
                 <form class="ms-5" [formGroup]="infoForm">
                     <div>
-                        <label for="name" style="width: 120px" for="name">Họ tên:</label>
+                        <label for="name">Họ tên:</label>
                         <input type="text" id="name" formControlName="ten">
                         @if (infoForm.get('ten').invalid) {
                         <div class="text-danger">Thiếu thông tin</div>
                         }
                     </div>
                     <div class="my-2">
-                        <label style="width: 120px" for="sdt">SĐT:</label>
+                        <label for="sdt">SĐT:</label>
                         <input type="tel" formControlName="sdt" id="sdt">
                         @if (infoForm.get('sdt').invalid) {
                         <div class="text-danger">SĐT sai định dạng</div>
                         }
                     </div>
                     <div>
-                        <label style="width: 120px" for="ngayDki">Ngày đăng kí:</label>
+                        <label for="ngayDki">Ngày đăng kí:</label>
                         <input type="string" formControlName="ngayDK" id="ngayDki">
                     </div>
                     <div class="my-2">
-                        <label style="width: 120px" for="activeHours">Tổng giờ thuê:</label>
-                        <input type="string" formControlName="gioThue" id="activeHours">
+                        <label for="ngayVIP">Thời hạn VIP:</label>
+                        <input type="string" formControlName="ngayVIP" id="ngayVIP">
                     </div>
                     <div>
-                        <label style="width: 120px" for="total">Tổng hóa đơn:</label>
+                        <label for="activeHours">Tổng giờ thuê:</label>
+                        <input type="string" formControlName="gioThue" id="activeHours">
+                    </div>
+                    <div class="my-2">
+                        <label for="total">Tổng hóa đơn:</label>
                         <input type="string" formControlName="tongTien" id="total">
                     </div>
-                    <div class="mt-2">
-                        <label style="width: 120px" for="level">Hạng:</label>
-                        <select class="pe-2" formControlName="hang" id="level">
+                    <div>
+                        <label for="level">Hạng:</label>
+                        <select class="pe-2" id="level" formControlName="hang">
                             <option value="VIP">VIP</option>
                             <option value="Thường">Thường</option>
                         </select>
                     </div>
+                    @if (renew) {
+                    <div class="mt-2">
+                        <label for="date">Gia hạn đến:</label>
+                        <input type="date" id="date" formControlName="giaHan" (change)="checkValid()">
+                    </div>
+                    }
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="func('edit')">Cập nhật</button>
+                <button type="button" class="btn btn-primary" [disabled]="!validEdit" data-bs-dismiss="modal" (click)="func('edit')">Cập
+                    nhật</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="func('del')">Xóa</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Thoát</button>
             </div>
@@ -124,7 +137,8 @@
             <div class="modal-footer">
                 <button type="button" (click)="this.dkiForm.reset()" class="btn btn-secondary"
                     data-bs-dismiss="modal">Thoát</button>
-                <button type="button" (click)="func('new')"  [disabled]="!dkiForm.valid" class="btn btn-primary" data-bs-dismiss="modal">Xác nhận</button>
+                <button type="button" (click)="func('new')" [disabled]="!dkiForm.valid" class="btn btn-primary"
+                    data-bs-dismiss="modal">Xác nhận</button>
             </div>
         </div>
     </div>

@@ -7,11 +7,15 @@ th {
     border: 1px solid black;
 }
 
-tr:nth-child(even) {
+tr:nth-child(odd) {
     background-color: rgb(202,234,202);
 }
 
 tr:hover {
     background-color: rgb(240, 237, 237);
     cursor: pointer;
+}
+
+.modal-body label{
+    width: 120px;
 }

@@ -6,8 +6,12 @@ import { Injectable } from '@angular/core';
 
 export class timeService {
 
-    getCurrentDay() {
-        let today = new Date();
+    getDay(tg: any) {
+        let today: any;
+        if (tg == "today")
+            today = new Date();
+        else today = new Date(tg);
+
         let dd = String(today.getDate()).padStart(2, '0');
         let mm = String(today.getMonth() + 1).padStart(2, '0');
         let yyyy = today.getFullYear();
@@ -35,6 +39,15 @@ export class timeService {
             else if (hour_ < 10)
                 return `0${output[0]}:${output[1]}`;
             else return `${output[0]}:${output[1]}`;
+    }
+
+    getDayDiff(day1_: any, day2_: any) {
+        day1_ = day1_.split("/");
+        day2_ = day2_.split("/");
+        let day1 = new Date(day1_[2], day1_[1]-1, day1_[0]);
+        let day2 = new Date(day2_[2], day2_[1]-1, day2_[0]);
+        
+        return Math.floor((day2.getTime() - day1.getTime())/(1000*3600*24));
     }
 
     getTimeDiff(time1: string, time2: string) {
